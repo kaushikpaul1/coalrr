@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import * as React from 'react'
 import { useQuery } from '@tanstack/react-query'
@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
+import { cn } from '@/lib/utils'
 
 interface DashboardData {
   stats: {
@@ -60,14 +61,14 @@ export function DashboardView() {
       {/* Header w/ notifications */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-xl font-bold tracking-tight">Platform Overview</h2>
-          <p className="text-sm text-muted-foreground">Cross-module KPIs across all 10 COALRR modules</p>
+          <h2 className="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-emerald-500 to-blue-600 bg-clip-text text-transparent">Platform Overview</h2>
+          <p className="text-sm font-medium text-muted-foreground">Cross-module KPIs across all 10 COALRR modules</p>
         </div>
         <NotificationBell notifications={data?.notifications ?? []} onMarkAllRead={() => {}} />
       </div>
 
       {/* KPI tiles */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
         <StatTile label="Projects" value={data?.stats.projectCount ?? 0} icon={Building2} accent="amber" sublabel="locked baselines" />
         <StatTile label="Plots" value={data?.stats.plotCount ?? 0} icon={MapPin} accent="emerald" sublabel={data ? `${formatNumber(data.stats.totalAcreage, 4)} acres` : '—'} />
         <StatTile label="Form-I Claims" value={data?.stats.claimCount ?? 0} icon={FileText} accent="violet" />
@@ -160,17 +161,17 @@ export function DashboardView() {
           {data && data.grievances.filter((g) => !g.resolution).length === 0 ? (
             <p className="py-6 text-center text-sm text-muted-foreground">No open grievances 🎉</p>
           ) : (
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               {data?.grievances.filter((g) => !g.resolution).map((g) => (
-                <li key={g.id} className="rounded-md border border-rose-200 bg-rose-50/50 p-3 dark:border-rose-900 dark:bg-rose-950/20">
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono text-xs font-medium text-rose-700 dark:text-rose-300">{g.grievance_code}</span>
-                    <Badge variant="outline" className={g.daysRemaining < 3 ? 'border-rose-300 bg-rose-100 text-rose-700' : 'border-amber-300 bg-amber-100 text-amber-700'}>
-                      <Clock className="mr-1 h-2.5 w-2.5" /> {g.daysRemaining}d left
+                <li key={g.id} className="rounded-xl border border-rose-200/50 bg-gradient-to-br from-rose-50/50 to-pink-50/20 p-3.5 shadow-sm transition-all hover:shadow-md dark:border-rose-900/30 dark:from-rose-950/20 dark:to-pink-950/10">
+                  <div className="flex items-start justify-between gap-2">
+                    <span className="font-mono text-xs font-bold text-rose-700 dark:text-rose-400">{g.grievance_code}</span>
+                    <Badge variant="outline" className={cn('h-6 shrink-0 font-medium border-0', g.daysRemaining < 3 ? 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300')}>
+                      <Clock className="mr-1 h-3 w-3" /> {g.daysRemaining}d left
                     </Badge>
                   </div>
-                  <p className="mt-1 text-xs font-medium">{g.complainant_name}</p>
-                  <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">{g.description}</p>
+                  <p className="mt-2 text-sm font-bold leading-tight">{g.complainant_name}</p>
+                  <p className="mt-1 line-clamp-2 text-xs font-medium text-muted-foreground">{g.description}</p>
                 </li>
               ))}
             </ul>
@@ -178,18 +179,21 @@ export function DashboardView() {
         </SectionCard>
 
         <SectionCard title="Recent Ledger Entries" icon={Lock} description="Hash-chained Form-D payments (immutable)">
-          <ul className="space-y-2">
+          <ul className="space-y-3">
             {data?.ledger_entries.slice(0, 4).map((e) => (
-              <li key={e.id} className="flex items-center justify-between gap-2 rounded-md border border-border/60 bg-card px-3 py-2">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium">{e.payee_name}</p>
-                  <p className="font-mono text-[10px] text-muted-foreground">
+              <li key={e.id} className="group flex items-center justify-between gap-3 rounded-xl border border-border/40 bg-card/50 p-3 transition-all hover:shadow-md">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-slate-100 to-slate-200 text-slate-700 dark:from-slate-800 dark:to-slate-900 dark:text-slate-300">
+                  <Lock className="h-4 w-4" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-bold leading-tight">{e.payee_name}</p>
+                  <p className="mt-0.5 font-mono text-[10px] font-medium text-muted-foreground">
                     {e.row_hash ? `🔒 ${e.row_hash.slice(0, 16)}…` : 'pending'}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-semibold tabular-nums">{formatINR(String(Number(e.amount_land) + Number(e.amount_rnr)))}</p>
-                  <p className="text-[10px] text-muted-foreground">{timeAgo(e.paid_at)}</p>
+                  <p className="text-sm font-bold tracking-tight tabular-nums text-emerald-600 dark:text-emerald-400">+{formatINR(String(Number(e.amount_land) + Number(e.amount_rnr)))}</p>
+                  <p className="mt-0.5 text-[10px] font-medium text-muted-foreground">{timeAgo(e.paid_at)}</p>
                 </div>
               </li>
             ))}
@@ -208,20 +212,20 @@ function AlertRow({ icon: Icon, color, label, value, onClick }: {
   onClick?: () => void
 }) {
   const colors = {
-    rose: 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300',
-    amber: 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
-    violet: 'bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300',
+    rose: 'bg-gradient-to-br from-rose-400 to-pink-500 text-white shadow-rose-500/20',
+    amber: 'bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-amber-500/20',
+    violet: 'bg-gradient-to-br from-violet-400 to-purple-500 text-white shadow-violet-500/20',
   }
   return (
     <button
       onClick={onClick}
-      className="flex w-full items-center gap-3 rounded-md border border-border/60 bg-card px-3 py-2 text-left transition hover:border-amber-300 hover:bg-amber-50/40"
+      className="group flex w-full items-center gap-3 rounded-xl border border-border/40 bg-card/50 px-3 py-2 text-left transition-all hover:-translate-y-0.5 hover:border-emerald-200/50 hover:shadow-md"
     >
-      <div className={`flex h-8 w-8 items-center justify-center rounded-full ${colors[color]}`}>
-        <Icon className="h-4 w-4" />
+      <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg shadow-sm ${colors[color]}`}>
+        <Icon className="h-5 w-5 transition-transform group-hover:scale-110" />
       </div>
-      <span className="flex-1 text-sm">{label}</span>
-      <span className="text-lg font-bold tabular-nums">{value}</span>
+      <span className="flex-1 text-sm font-medium">{label}</span>
+      <span className="text-xl font-bold tracking-tight tabular-nums">{value}</span>
     </button>
   )
 }

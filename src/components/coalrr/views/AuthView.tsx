@@ -60,10 +60,10 @@ export function AuthView() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background via-background to-amber-50/30 p-4">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background via-background to-emerald-50/30 p-4">
       <div className="w-full max-w-md">
         <div className="mb-6 text-center">
-          <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 text-white shadow-lg">
+          <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-600 text-white shadow-lg">
             <Mountain className="h-7 w-7" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight">COALRR</h1>
@@ -80,8 +80,8 @@ export function AuthView() {
           </div>
           {portal === 'public' && (
             <div className="mb-4 flex items-center gap-2 text-xs">
-              <button onClick={() => setMode('login')} className={cn('flex-1 rounded-md py-1.5 font-medium transition', mode === 'login' ? 'bg-amber-100 text-amber-800' : 'text-muted-foreground')}>Login</button>
-              <button onClick={() => setMode('register')} className={cn('flex-1 rounded-md py-1.5 font-medium transition', mode === 'register' ? 'bg-amber-100 text-amber-800' : 'text-muted-foreground')}>Register</button>
+              <button onClick={() => setMode('login')} className={cn('flex-1 rounded-md py-1.5 font-medium transition', mode === 'login' ? 'bg-emerald-100 text-emerald-800' : 'text-muted-foreground')}>Login</button>
+              <button onClick={() => setMode('register')} className={cn('flex-1 rounded-md py-1.5 font-medium transition', mode === 'register' ? 'bg-emerald-100 text-emerald-800' : 'text-muted-foreground')}>Register</button>
             </div>
           )}
           {portal === 'ecl' && (
@@ -105,7 +105,7 @@ export function AuthView() {
                 <AlertDescription className="text-xs text-sky-800"><strong>Demo credentials:</strong> password <code className="rounded bg-sky-100 px-1">demo1234</code> for all seeded officers.</AlertDescription>
               </Alert>
               <Captcha purpose="ecl-login" onVerified={() => setEclCaptchaVerified(true)} />
-              <Button onClick={submit} disabled={loading || !eclForm.email || !eclForm.password || !eclCaptchaVerified} className="w-full bg-amber-600 hover:bg-amber-700">
+              <Button onClick={submit} disabled={loading || !eclForm.email || !eclForm.password || !eclCaptchaVerified} className="w-full bg-emerald-600 hover:bg-emerald-700">
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />} Sign in to ECL Portal
               </Button>
               <div className="rounded-md bg-muted/40 p-2.5 text-[11px] text-muted-foreground">
@@ -121,9 +121,9 @@ export function AuthView() {
           )}
           {portal === 'public' && mode === 'register' && (
             <div className="space-y-3">
-              <Alert className="border-amber-200 bg-amber-50">
-                <Fingerprint className="h-4 w-4 text-amber-600" />
-                <AlertDescription className="text-xs text-amber-800">Aadhaar-based registration — SHA-256 hashed before storage.</AlertDescription>
+              <Alert className="border-cyan-200 bg-cyan-50">
+                <Fingerprint className="h-4 w-4 text-cyan-600" />
+                <AlertDescription className="text-xs text-cyan-800">Aadhaar-based registration — SHA-256 hashed before storage.</AlertDescription>
               </Alert>
               <div><Label className="text-xs">Full Name (as per Aadhaar)</Label><Input value={regForm.name} onChange={(e) => setRegForm({ ...regForm, name: e.target.value })} placeholder="e.g. Ramesh Kumar Sahoo" /></div>
               <div className="grid grid-cols-2 gap-2">
@@ -140,7 +140,7 @@ export function AuthView() {
               <Button onClick={submit} disabled={loading || !regForm.name || !regForm.aadhaarNumber || regForm.mobile.length !== 10 || regForm.otp.length !== 6 || !regCaptchaVerified} className="w-full bg-emerald-600 hover:bg-emerald-700">
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />} Register &amp; Continue
               </Button>
-              <p className="text-center text-[11px] text-muted-foreground">Already registered? <button onClick={() => setMode('login')} className="font-medium text-amber-700 hover:underline">Login instead</button></p>
+              <p className="text-center text-[11px] text-muted-foreground">Already registered? <button onClick={() => setMode('login')} className="font-medium text-emerald-700 hover:underline">Login instead</button></p>
             </div>
           )}
           {portal === 'public' && mode === 'login' && (
@@ -165,7 +165,7 @@ export function AuthView() {
               <Button onClick={submit} disabled={loading || pubForm.mobile.length !== 10 || pubForm.otp.length !== 6 || !pubCaptchaVerified} className="w-full bg-emerald-600 hover:bg-emerald-700">
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Fingerprint className="h-4 w-4" />} Login to Public Portal
               </Button>
-              <p className="text-center text-[11px] text-muted-foreground">New user? <button onClick={() => setMode('register')} className="font-medium text-amber-700 hover:underline">Register here</button></p>
+              <p className="text-center text-[11px] text-muted-foreground">New user? <button onClick={() => setMode('register')} className="font-medium text-emerald-700 hover:underline">Register here</button></p>
             </div>
           )}
         </div>
