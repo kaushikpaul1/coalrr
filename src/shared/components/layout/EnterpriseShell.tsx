@@ -27,6 +27,14 @@ import { useAppTranslation } from "@/localization/hooks/useAppTranslation";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
 import { Separator } from "@/shared/components/ui/separator";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/shared/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 
 import { LanguageSwitcher } from "@/localization/components/LanguageSwitcher";
@@ -138,8 +146,8 @@ export function EnterpriseShell({ children }: { children?: React.ReactNode }) {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-50">
-      <header className="sticky top-0 z-30 flex h-16 items-center border-b border-blue-100 bg-white pr-4 shadow-sm">
+    <div className="flex min-h-screen flex-col bg-slate-50 font-sans antialiased">
+      <header className="sticky top-0 z-30 flex h-16 items-center border-b border-slate-200 border-t-4 border-t-blue-600 bg-white/80 pr-4 shadow-sm backdrop-blur-md transition-all">
         {/* Mobile Menu Toggle */}
         <div className="flex items-center pl-4 lg:hidden">
           <Button
@@ -147,16 +155,17 @@ export function EnterpriseShell({ children }: { children?: React.ReactNode }) {
             size="icon"
             onClick={() => setSidebarOpen((s) => !s)}
             aria-label="Toggle sidebar"
+            className="hover:bg-slate-100"
           >
             {sidebarOpen ? (
-              <X className="h-5 w-5 text-blue-700" />
+              <X className="h-5 w-5 text-slate-700" />
             ) : (
-              <Menu className="h-5 w-5 text-blue-700" />
+              <Menu className="h-5 w-5 text-slate-700" />
             )}
           </Button>
         </div>
 
-        {/* Logo Container - Perfectly matches the w-64 sidebar width */}
+        {/* Logo Container - Matches the w-64 sidebar width */}
         <div
           className="hidden h-full w-64 shrink-0 cursor-pointer items-center justify-start pl-1 lg:flex"
           onClick={() => router.push("/")}
@@ -167,6 +176,9 @@ export function EnterpriseShell({ children }: { children?: React.ReactNode }) {
             className="h-16 w-auto object-contain"
           />
         </div>
+
+        {/* Vertical Divider for Premium Separation */}
+        <div className="hidden lg:block h-8 w-px bg-slate-300 mx-2"></div>
 
         {/* Mobile Logo Fallback */}
         <div
@@ -180,78 +192,108 @@ export function EnterpriseShell({ children }: { children?: React.ReactNode }) {
           />
         </div>
 
-        {/* Top Navigation */}
-        <nav className="hidden flex-1 items-center gap-1 pl-6 md:flex">
-          {visibleNav.slice(0, 5).map((item) => (
-            <button
-              key={item.key}
-              onClick={() => handleNavClick(item.key)}
-              className={cn(
-                "rounded-md px-2.5 py-1 text-sm font-medium transition",
-                getActiveState(item.key)
-                  ? "bg-emerald-500 text-white shadow-sm"
-                  : "text-slate-600 hover:bg-emerald-50 hover:text-emerald-700",
-              )}
-            >
-              {t(`nav.${item.key}.label`)}
-            </button>
-          ))}
-        </nav>
+        {/* Active Page Header (Dynamic Breadcrumb) */}
+        <div className="hidden flex-1 items-center gap-3 pl-4 md:flex">
+          {(() => {
+            const activeItem = visibleNav.find((item) =>
+              getActiveState(item.key),
+            );
+            if (!activeItem) return null;
+
+            const ActiveIcon = ICONS[activeItem.icon] ?? LayoutDashboard;
+            return (
+              <div className="flex items-center gap-3 animate-in fade-in slide-in-from-left-2 duration-300">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-700 shadow-sm border border-blue-100/50">
+                  <ActiveIcon className="h-4 w-4" />
+                </div>
+                <div className="flex flex-col">
+                  <h1 className="text-sm font-bold text-slate-900 leading-none">
+                    {t(`nav.${activeItem.key}.label`)}
+                  </h1>
+                  <span className="mt-1 text-[10px] font-semibold text-slate-500 uppercase tracking-widest">
+                    {activeItem.module}
+                  </span>
+                </div>
+              </div>
+            );
+          })()}
+        </div>
         <div className="ml-auto flex items-center gap-2">
-          <div className="hidden items-center gap-2 rounded-md border border-blue-100 bg-blue-50 px-2.5 py-1 sm:flex">
-            <div
-              className={cn(
-                "flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold",
-                user.portal === "ecl"
-                  ? "bg-emerald-100 text-emerald-700"
-                  : "bg-blue-100 text-blue-700",
-              )}
-            >
-              {(user.name || user.role || "user")
-                .split(" ")
-                .map((n: string) => n[0])
-                .join("")
-                .slice(0, 2)}
-            </div>
-            <div className="text-left">
-              <p className="text-xs font-medium leading-tight text-blue-950">
+          <NotificationCenter user_id={user.id} />
+          <LanguageSwitcher />
+          <div className="flex items-center gap-3 rounded-md border border-slate-200 bg-slate-50 pl-2 pr-5 py-1.5 min-w-48">
+            <DropdownMenu modal={false}>
+              <DropdownMenuTrigger asChild>
+                <button className="focus:outline-none outline-none group">
+                  <div
+                    className={cn(
+                      "flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-bold shadow-sm transition-all duration-200 ease-in-out group-hover:scale-105 group-hover:shadow-md group-active:scale-95 group-data-[state=open]:ring-2 group-data-[state=open]:ring-slate-400 group-data-[state=open]:ring-offset-1",
+                      user.portal === "ecl"
+                        ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
+                        : "bg-slate-200 text-slate-800 border border-slate-300",
+                    )}
+                  >
+                    {(user.name || user.role || "user")
+                      .split(" ")
+                      .map((n: string) => n[0])
+                      .join("")
+                      .slice(0, 2)}
+                  </div>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="start"
+                side="bottom"
+                sideOffset={12}
+                className="w-52 origin-top-left data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 data-[state=open]:zoom-in-50 data-[state=closed]:zoom-out-50 data-[state=open]:slide-in-from-top-4 data-[state=open]:slide-in-from-left-4 duration-500 ease-out"
+              >
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => router.push("/settings/password")}
+                >
+                  <Lock className="mr-2 h-4 w-4" />
+                  <span>Change Password</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => {
+                    fetch("/api/auth/logout", { method: "POST" }).then(() => {
+                      window.location.href = "/";
+                    });
+                  }}
+                  className="text-red-600 focus:bg-red-50 focus:text-red-600"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <div className="hidden text-left sm:block cursor-text select-text">
+              <p className="text-xs font-semibold leading-tight text-slate-900">
                 {user.name || "user"}
               </p>
-              <p className="text-[10px] text-blue-700/80 leading-tight">
+              <p className="text-[10px] text-slate-500 leading-tight">
                 {user.roleLabel ?? user.role}
                 {user.designation ? ` · ${user.designation}` : ""}
               </p>
             </div>
           </div>
-          <LanguageSwitcher />
-          <NotificationCenter user_id={user.id} />
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-9 w-9 text-blue-700 hover:bg-blue-50 hover:text-blue-900"
-            onClick={() => {
-              fetch("/api/auth/logout", { method: "POST" }).then(() => {
-                window.location.href = "/";
-              });
-            }}
-            aria-label="Sign out"
-          >
-            <LogOut className="h-4 w-4" />
-          </Button>
         </div>
       </header>
 
       <div className="flex flex-1">
         <aside
           className={cn(
-            "fixed inset-y-16 left-0 z-20 w-64 transform border-r border-blue-100 bg-gradient-to-b from-white to-blue-50/50 transition-transform lg:static lg:translate-x-0",
+            "fixed inset-y-16 left-0 z-20 w-64 transform border-r border-slate-800 bg-slate-900 transition-transform lg:static lg:translate-x-0 shadow-lg lg:shadow-none",
             sidebarOpen
               ? "translate-x-0"
               : "-translate-x-full lg:translate-x-0",
           )}
         >
           <nav className="flex h-full flex-col gap-1 overflow-y-auto p-3">
-            <p className="px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-blue-600/70">
+            <p className="px-2 py-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-400">
               {user.portal === "ecl" ? "ECL Modules" : "Citizen Portal"}
             </p>
             {visibleNav.map((item) => {
@@ -262,32 +304,37 @@ export function EnterpriseShell({ children }: { children?: React.ReactNode }) {
                   key={item.key}
                   onClick={() => handleNavClick(item.key)}
                   className={cn(
-                    "group flex items-start gap-2.5 rounded-lg px-2.5 py-2 text-left transition",
+                    "group flex items-start gap-2.5 rounded-lg px-2.5 py-2 text-left transition-all duration-200 ease-in-out",
                     active
-                      ? "bg-white text-blue-700 shadow-sm ring-1 ring-blue-200"
-                      : "text-slate-600 hover:bg-white/60 hover:text-blue-700",
+                      ? "bg-white text-slate-950 shadow-md ring-1 ring-slate-200"
+                      : "text-white hover:bg-slate-800",
                   )}
                 >
                   <Icon
                     className={cn(
-                      "mt-0.5 h-4 w-4 shrink-0",
+                      "mt-0.5 h-4 w-4 shrink-0 transition-colors",
                       active
-                        ? "text-blue-600"
-                        : "text-slate-400 group-hover:text-blue-500",
+                        ? "text-slate-900"
+                        : "text-slate-300 group-hover:text-white",
                     )}
                   />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1.5">
-                      <span className="text-sm font-medium">
+                      <span
+                        className={cn(
+                          "text-sm font-semibold transition-colors",
+                          active ? "text-slate-950" : "text-white",
+                        )}
+                      >
                         {t(`nav.${item.key}.label`)}
                       </span>
                       <Badge
                         variant="outline"
                         className={cn(
-                          "h-3.5 px-1 text-[9px] font-mono",
+                          "h-3.5 px-1.5 text-[9px] font-mono border-0",
                           active
-                            ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-                            : "border-slate-200 text-slate-500",
+                            ? "bg-slate-200 text-slate-900"
+                            : "bg-slate-800 text-slate-300",
                         )}
                       >
                         {item.module}
@@ -295,40 +342,40 @@ export function EnterpriseShell({ children }: { children?: React.ReactNode }) {
                     </div>
                     <p
                       className={cn(
-                        "mt-0.5 line-clamp-2 text-[11px]",
-                        active ? "text-blue-700/80" : "text-slate-500",
+                        "mt-1 line-clamp-2 text-[10px] leading-relaxed transition-colors",
+                        active ? "text-slate-600" : "text-slate-400",
                       )}
                     >
                       {t(`nav.${item.key}.desc`)}
                     </p>
                   </div>
                   {active && (
-                    <ChevronRight className="mt-1 h-3.5 w-3.5 shrink-0 text-emerald-500" />
+                    <ChevronRight className="mt-1 h-3.5 w-3.5 shrink-0 text-slate-900" />
                   )}
                 </button>
               );
             })}
-            <Separator className="my-2 border-blue-100" />
-            <div className="rounded-lg bg-blue-50/80 p-3 ring-1 ring-blue-100">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-blue-700">
+            <Separator className="my-3 border-slate-800" />
+            <div className="rounded-lg bg-slate-800/50 p-3 ring-1 ring-slate-700">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
                 Architecture
               </p>
-              <ul className="mt-1.5 space-y-1 text-[11px] text-blue-900/70">
+              <ul className="mt-2 space-y-1 text-[11px] text-white font-mono">
                 <li>• Math Engine (decimal.js)</li>
                 <li>• Workflow Engine (FSM)</li>
                 <li>• Docx Engine (registry)</li>
-                <li>• Immutable Form-D Ledger</li>
+                <li>• Immutable Ledger</li>
               </ul>
             </div>
             {user.portal === "ecl" && (
-              <div className="mt-2 rounded-lg border border-emerald-200 bg-gradient-to-br from-emerald-50 to-emerald-100/50 p-3 shadow-sm">
-                <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-800">
-                  <Building2 className="h-3 w-3 text-emerald-600" />{" "}
+              <div className="mt-2 rounded-lg border border-slate-700 bg-slate-800 p-3 shadow-sm">
+                <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-300">
+                  <Building2 className="h-3 w-3 text-slate-400" />{" "}
                   {user.colliery_code ?? "ECL"}
                 </p>
-                <p className="mt-0.5 text-[11px] text-emerald-900/70">
+                <p className="mt-1 text-[11px] text-slate-400">
                   Logged in as{" "}
-                  <span className="font-medium text-emerald-900">
+                  <span className="font-semibold text-white">
                     {user.roleLabel ?? user.role}
                   </span>
                 </p>
@@ -338,7 +385,7 @@ export function EnterpriseShell({ children }: { children?: React.ReactNode }) {
         </aside>
         {sidebarOpen && (
           <div
-            className="fixed inset-0 z-10 bg-blue-950/20 lg:hidden"
+            className="fixed inset-0 z-10 bg-slate-950/50 backdrop-blur-sm lg:hidden transition-opacity"
             onClick={() => setSidebarOpen(false)}
           />
         )}
@@ -346,12 +393,30 @@ export function EnterpriseShell({ children }: { children?: React.ReactNode }) {
           <div className="mx-auto max-w-7xl">{children}</div>
         </main>
       </div>
-      <footer className="mt-auto border-t border-blue-100 bg-white px-4 py-3 text-center text-[11px] text-slate-500">
-        <p>
-          <span className="font-semibold text-blue-900">COALRR</span> — Coal
-          Land Acquisition, Rehabilitation &amp; Resettlement Platform · Next.js
-          16 + TypeScript + Prisma + decimal.js
-        </p>
+      <footer className="mt-auto border-t-4 border-slate-900 border-t-blue-600 bg-slate-950 px-4 sm:px-6 py-4">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 md:flex-row">
+          <div className="flex items-center gap-2.5 text-[11px] text-slate-400">
+            <span className="font-bold tracking-wider text-white">COALRR</span>
+            <span className="h-3 w-px bg-slate-700"></span>
+            <span className="hidden sm:inline text-slate-300">
+              Coal Land Acquisition, Rehabilitation &amp; Resettlement
+            </span>
+            <span className="sm:hidden text-slate-300">
+              CLA &amp; R Platform
+            </span>
+          </div>
+          <div className="flex items-center gap-3 text-[10px] font-medium uppercase tracking-wider text-slate-500">
+            <div className="flex items-center gap-1.5">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
+              </span>
+              <span className="text-emerald-400">All Systems Operational</span>
+            </div>
+            <span className="hidden h-3 w-px bg-slate-700 sm:block"></span>
+            <span className="hidden sm:block text-slate-300">v1.0.0-beta</span>
+          </div>
+        </div>
       </footer>
     </div>
   );
