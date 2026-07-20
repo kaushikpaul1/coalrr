@@ -286,14 +286,14 @@ export function EnterpriseShell({ children }: { children?: React.ReactNode }) {
       <div className="flex flex-1">
         <aside
           className={cn(
-            "fixed inset-y-16 left-0 z-20 w-64 transform border-r border-slate-800 bg-slate-900 transition-transform lg:static lg:translate-x-0 shadow-lg lg:shadow-none",
+            "fixed inset-y-16 left-0 z-20 w-64 transform border-r border-slate-200 bg-white transition-transform lg:static lg:translate-x-0 shadow-lg lg:shadow-none",
             sidebarOpen
               ? "translate-x-0"
               : "-translate-x-full lg:translate-x-0",
           )}
         >
           <nav className="flex h-full flex-col gap-1 overflow-y-auto p-3">
-            <p className="px-2 py-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+            <p className="px-2 py-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-500">
               {user.portal === "ecl" ? "ECL Modules" : "Citizen Portal"}
             </p>
             {visibleNav.map((item) => {
@@ -306,16 +306,16 @@ export function EnterpriseShell({ children }: { children?: React.ReactNode }) {
                   className={cn(
                     "group flex items-start gap-2.5 rounded-lg px-2.5 py-2 text-left transition-all duration-200 ease-in-out",
                     active
-                      ? "bg-white text-slate-950 shadow-md ring-1 ring-slate-200"
-                      : "text-white hover:bg-slate-800",
+                      ? "bg-blue-50 text-blue-900 shadow-sm ring-1 ring-blue-200/50"
+                      : "text-slate-700 hover:bg-blue-50 hover:text-blue-800",
                   )}
                 >
                   <Icon
                     className={cn(
                       "mt-0.5 h-4 w-4 shrink-0 transition-colors",
                       active
-                        ? "text-slate-900"
-                        : "text-slate-300 group-hover:text-white",
+                        ? "text-blue-700"
+                        : "text-slate-400 group-hover:text-blue-600",
                     )}
                   />
                   <div className="min-w-0 flex-1">
@@ -323,7 +323,7 @@ export function EnterpriseShell({ children }: { children?: React.ReactNode }) {
                       <span
                         className={cn(
                           "text-sm font-semibold transition-colors",
-                          active ? "text-slate-950" : "text-white",
+                          active ? "text-blue-950" : "text-slate-700 group-hover:text-blue-900",
                         )}
                       >
                         {t(`nav.${item.key}.label`)}
@@ -333,8 +333,8 @@ export function EnterpriseShell({ children }: { children?: React.ReactNode }) {
                         className={cn(
                           "h-3.5 px-1.5 text-[9px] font-mono border-0",
                           active
-                            ? "bg-slate-200 text-slate-900"
-                            : "bg-slate-800 text-slate-300",
+                            ? "bg-blue-100 text-blue-800"
+                            : "bg-slate-100 text-slate-600 group-hover:bg-blue-100/50 group-hover:text-blue-700",
                         )}
                       >
                         {item.module}
@@ -343,24 +343,24 @@ export function EnterpriseShell({ children }: { children?: React.ReactNode }) {
                     <p
                       className={cn(
                         "mt-1 line-clamp-2 text-[10px] leading-relaxed transition-colors",
-                        active ? "text-slate-600" : "text-slate-400",
+                        active ? "text-blue-700/80" : "text-slate-500 group-hover:text-blue-700/70",
                       )}
                     >
                       {t(`nav.${item.key}.desc`)}
                     </p>
                   </div>
                   {active && (
-                    <ChevronRight className="mt-1 h-3.5 w-3.5 shrink-0 text-slate-900" />
+                    <ChevronRight className="mt-1 h-3.5 w-3.5 shrink-0 text-blue-700" />
                   )}
                 </button>
               );
             })}
-            <Separator className="my-3 border-slate-800" />
-            <div className="rounded-lg bg-slate-800/50 p-3 ring-1 ring-slate-700">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+            <Separator className="my-3 border-slate-200" />
+            <div className="rounded-lg bg-slate-50 p-3 ring-1 ring-slate-200">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
                 Architecture
               </p>
-              <ul className="mt-2 space-y-1 text-[11px] text-white font-mono">
+              <ul className="mt-2 space-y-1 text-[11px] text-slate-700 font-mono">
                 <li>• Math Engine (decimal.js)</li>
                 <li>• Workflow Engine (FSM)</li>
                 <li>• Docx Engine (registry)</li>
@@ -368,14 +368,14 @@ export function EnterpriseShell({ children }: { children?: React.ReactNode }) {
               </ul>
             </div>
             {user.portal === "ecl" && (
-              <div className="mt-2 rounded-lg border border-slate-700 bg-slate-800 p-3 shadow-sm">
-                <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-300">
+              <div className="mt-2 rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
+                <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-500">
                   <Building2 className="h-3 w-3 text-slate-400" />{" "}
                   {user.colliery_code ?? "ECL"}
                 </p>
-                <p className="mt-1 text-[11px] text-slate-400">
+                <p className="mt-1 text-[11px] text-slate-500">
                   Logged in as{" "}
-                  <span className="font-semibold text-white">
+                  <span className="font-semibold text-slate-900">
                     {user.roleLabel ?? user.role}
                   </span>
                 </p>
